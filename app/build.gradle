@@ -1,0 +1,86 @@
+plugins {
+    id 'com.android.application'
+    id 'org.jetbrains.kotlin.android'
+    id 'kotlin-kapt'
+    id 'com.google.dagger.hilt.android'
+}
+
+android {
+    namespace 'com.composeui'
+    compileSdk 33
+
+    defaultConfig {
+        applicationId "com.composeui"
+        minSdk 23
+        targetSdk 33
+        versionCode 1
+        versionName "1.0"
+        multiDexEnabled true
+        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+        vectorDrawables {
+            useSupportLibrary true
+        }
+        javaCompileOptions {
+            annotationProcessorOptions {
+                arguments += ["room.schemaLocation": "$projectDir/schemas".toString()]
+            }
+        }
+    }
+
+    buildTypes {
+
+        debug {
+            buildConfigField("String", "API_BASE", "\"https://dummyjson.com/\"")
+            minifyEnabled false
+            debuggable true
+        }
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+        }
+    }
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
+    kotlinOptions {
+        jvmTarget = '1.8'
+    }
+    buildFeatures {
+        compose true
+    }
+    composeOptions {
+        kotlinCompilerExtensionVersion compose_version
+    }
+    packagingOptions {
+        resources {
+            excludes += '/META-INF/{AL2.0,LGPL2.1}'
+        }
+    }
+}
+
+dependencies {
+
+    implementation project(":data")
+    implementation project(":domain")
+    implementation project(":usecases")
+
+    implementation androidLibs.values()
+    implementation libs.values()
+    implementation kotlinLibs.values()
+    implementation platform("com.squareup.okhttp3:okhttp-bom:4.10.0")
+    kapt androidKaptLibs.values()
+    testImplementation androidxTestLibs.values()
+    testImplementation testLibs.values()
+    androidTestImplementation androidTestLibs.values()
+    debugImplementation androidDebugImplementation.values()
+}
+
+
+hilt {
+    enableAggregatingTask = true
+}
+
+kapt {
+    correctErrorTypes true
+}
