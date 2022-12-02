@@ -5,7 +5,6 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
-import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -18,11 +17,12 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.composeui.domain.model.Product
 import com.composeui.ui.navigation.Screen
+import kotlin.math.round
 
 @Composable
 fun MainScreen(
-    navControlLer: NavController,
-    viewModel: MainViewModel = hiltViewModel()
+    viewModel: MainViewModel = hiltViewModel(),
+    navigateToProduct: (Product) -> Unit,
 ) {
     val products: List<Product> by viewModel.products.observeAsState(emptyList())
 
@@ -36,7 +36,9 @@ fun MainScreen(
             contentPadding = PaddingValues(4.dp)
         ) {
             items(products) { product ->
-                MiCompose(product, navControlLer)
+                ProductCompose(product) {
+                    navigateToProduct(it)
+                }
             }
 
         }
@@ -47,12 +49,13 @@ fun MainScreen(
 
 
 @Composable
-fun MiCompose(product: Product, navControlLer: NavController) {
+fun ProductCompose(product: Product, onClickItem: (Product) -> Unit) {
     Card(modifier = Modifier
-        .padding(12.dp)
+        .padding(8.dp, 6.dp)
         .clickable {
-            navControlLer.navigate(Screen.ProductScreen.withArgs("${product.id}"))
-        }
+            onClickItem(product)
+        },
+
     ) {
         Column(
             modifier = Modifier.padding(12.dp)

@@ -10,14 +10,13 @@ import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.navigation.NavController
 import com.composeui.domain.model.Product
 
 @Composable
 fun ProductScreen(
-    navControlLer: NavController,
     id: Int,
-    viewModel: ProductViewModel = hiltViewModel()
+    viewModel: ProductViewModel = hiltViewModel(),
+    toBack: () -> Unit,
 ) {
     viewModel.getProduct(id)
     val product: Product? by viewModel.product.observeAsState()
@@ -27,6 +26,7 @@ fun ProductScreen(
     ) {
         Text(
             text = "Product: ${product?.description}",
-            modifier = Modifier.clickable { navControlLer.popBackStack() })
+            modifier = Modifier.clickable { toBack() }
+        )
     }
 }

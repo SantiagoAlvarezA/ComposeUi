@@ -14,7 +14,9 @@ fun Navigation() {
     val navController = rememberNavController()
     NavHost(navController = navController, startDestination = Screen.MainScreen.route) {
         composable(route = Screen.MainScreen.route) {
-            MainScreen(navController)
+            MainScreen {
+                navController.navigate(Screen.ProductScreen.withArgs("${it.id}"))
+            }
         }
         composable(
             route = "${Screen.ProductScreen.route}/{id}",
@@ -22,7 +24,9 @@ fun Navigation() {
         ) {
             val id = it.arguments?.getInt("id")
             requireNotNull(id)
-            ProductScreen(navController, id)
+            ProductScreen(id) {
+                navController.popBackStack()
+            }
         }
 
 
