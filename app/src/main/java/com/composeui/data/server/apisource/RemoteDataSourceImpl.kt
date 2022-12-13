@@ -4,22 +4,20 @@ import com.composeui.data.Resource
 import com.composeui.data.mappers.toDomainProduct
 import com.composeui.data.server.BaseApiCall
 import com.composeui.data.server.api.Api
-import com.composeui.data.server.model.BaseResponse
-import com.composeui.data.server.model.ProductResponse
 import com.composeui.data.source.remote.RemoteDataSource
 import com.composeui.domain.model.Product
-import com.google.gson.Gson
 import javax.inject.Inject
+import com.composeui.domain.resource.Resource as DomainResource
 
 class RemoteDataSourceImpl @Inject constructor(
     private val api: Api
 ) : RemoteDataSource, BaseApiCall() {
 
-    override suspend fun getRemoteProducts(): List<Product> =
+    override suspend fun getRemoteProducts(): DomainResource<List<Product>> =
         when (val response = safeApiCall { api.getAllProducts() }) {
             is Resource.Success -> {
-                response.data.products.map { it.toDomainProduct() }
+                DomainResource.Success(response.data.products.map { it.toDomainProduct() })
             }
-            else -> emptyList()
+            else -> DomainResource.Error()
         }
 }

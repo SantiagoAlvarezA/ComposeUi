@@ -1,7 +1,7 @@
 package com.composeui.ui.screens.main
 
 import com.composeui.data.repository.Repository
-import com.composeui.usecases.UseCase
+import com.composeui.usecases.model.UseCase
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn

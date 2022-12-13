@@ -11,6 +11,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.composeui.domain.model.Product
+import com.composeui.ui.screens.main.ProductCompose
 
 @Composable
 fun ProductScreen(
@@ -24,9 +25,10 @@ fun ProductScreen(
         contentAlignment = Alignment.Center,
         modifier = Modifier.fillMaxSize(),
     ) {
-        Text(
-            text = "Product: ${product?.description}",
-            modifier = Modifier.clickable { toBack() }
-        )
+        product?.let {
+            ProductCompose(it) {
+                toBack()
+            }
+        }
     }
 }

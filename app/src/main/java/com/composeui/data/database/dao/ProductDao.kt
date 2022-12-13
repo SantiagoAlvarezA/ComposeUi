@@ -7,7 +7,7 @@ import kotlinx.coroutines.flow.Flow
 @Dao
 interface ProductDao {
     @Query("SELECT * FROM Product")
-    fun getAll(): Flow<List<Product>>
+    fun getAll(): Flow<List<Product>?>
 
     @Query(
         """
@@ -17,7 +17,7 @@ interface ProductDao {
         WHERE id = :id
         """
     )
-    fun findById(id: Int): Flow<Product>
+    fun findById(id: Int): Flow<Product?>
 
     @Query("SELECT COUNT(id) FROM Product")
     fun itemsCount(): Int

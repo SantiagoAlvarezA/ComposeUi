@@ -6,7 +6,8 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.composeui.domain.model.Product
-import com.composeui.usecases.UseCase
+import com.composeui.domain.resource.Resource
+import com.composeui.usecases.model.UseCase
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -29,7 +30,17 @@ class ProductViewModel @Inject constructor(
             useCase.getProduct(id)
         }
         product.collectLatest {
-            _product.value = it
+            when (it) {
+                is Resource.Success -> {
+                    it.data.let { _it ->
+                        _product.value = _it
+                    }
+                }
+
+                else -> {
+
+                }
+            }
         }
     }
 }

@@ -6,6 +6,7 @@ import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.material3.Card
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -24,24 +25,33 @@ fun MainScreen(
     viewModel: MainViewModel = hiltViewModel(),
     navigateToProduct: (Product) -> Unit,
 ) {
-    val products: List<Product> by viewModel.products.observeAsState(emptyList())
+    val state = viewModel.state
 
     Box(
         modifier = Modifier.fillMaxSize(),
         contentAlignment = Alignment.Center
     ) {
 
+        if(state.isLoading){
+            CircularProgressIndicator()
+        }
+
+        state.error?.let {
+            Text(text = it)
+        }
+
         LazyVerticalGrid(
             columns = GridCells.Adaptive(180.dp),
             contentPadding = PaddingValues(4.dp)
         ) {
-            items(products) { product ->
+            items(state.products) { product ->
                 ProductCompose(product) {
                     navigateToProduct(it)
                 }
             }
 
         }
+
 
 
     }
