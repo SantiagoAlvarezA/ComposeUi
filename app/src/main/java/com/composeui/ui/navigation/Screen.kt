@@ -1,6 +1,7 @@
 package com.composeui.ui.navigation
 
 sealed class Screen(val route: String) {
+    object SplashScreen : Screen("splash")
     object MainScreen : Screen("main")
     object TaskScreen : Screen("task")
 

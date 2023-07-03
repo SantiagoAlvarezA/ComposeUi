@@ -1,7 +1,6 @@
 package com.composeui.ui.screens.main
 
 import android.widget.Toast
-import androidx.activity.contextaware.ContextAware
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.grid.GridCells
@@ -21,7 +20,6 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.composeui.R
 import com.composeui.domain.model.Task
-import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -69,7 +67,7 @@ fun MainScreen(
                     columns = GridCells.Adaptive(180.dp),
                     contentPadding = PaddingValues(4.dp)
                 ) {
-                    items(state.products) { product ->
+                    items(state.tasks) { product ->
                         TaskCompose(product) {
                             navigateToProduct(it)
                         }
@@ -84,21 +82,21 @@ fun MainScreen(
 
 
 @Composable
-fun TaskCompose(product: Task, onClickItem: (Task) -> Unit) {
+fun TaskCompose(task: Task, onClickItem: (Task) -> Unit) {
     Card(
         modifier = Modifier
             .padding(8.dp, 6.dp)
             .clickable {
-                onClickItem(product)
+                onClickItem(task)
             },
 
         ) {
         Column(
             modifier = Modifier.padding(12.dp)
         ) {
-            Text(text = product.title)
+            Text(text = task.title)
             Spacer(modifier = Modifier.height(16.dp))
-            Text(text = product.description)
+            Text(text = task.description)
         }
 
     }

@@ -26,7 +26,7 @@ class MainViewModel @Inject constructor(
                 when (it) {
                     is Resource.Success -> {
                         state = state.copy(
-                            products = it.data,
+                            tasks = it.data,
                             isLoading = false,
                             error = null
                         )
@@ -35,12 +35,12 @@ class MainViewModel @Inject constructor(
                         state = state.copy(
                             isLoading = true,
                             error = "Error",
-                            products = emptyList()
+                            tasks = emptyList()
                         )
                     }
                     is Resource.Loading -> {
                         state = state.copy(
-                            products = emptyList(),
+                            tasks = emptyList(),
                             isLoading = true,
                             error = null
                         )

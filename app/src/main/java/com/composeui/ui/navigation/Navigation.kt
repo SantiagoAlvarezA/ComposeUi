@@ -7,12 +7,19 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import com.composeui.ui.screens.main.MainScreen
+import com.composeui.ui.screens.splash.SplashScreen
 import com.composeui.ui.screens.task.ProductScreen
 
 @Composable
 fun Navigation() {
     val navController = rememberNavController()
-    NavHost(navController = navController, startDestination = Screen.MainScreen.route) {
+    NavHost(navController = navController, startDestination = Screen.SplashScreen.route) {
+        composable(route = Screen.SplashScreen.route) {
+            SplashScreen {
+                navController.popBackStack()
+                navController.navigate(Screen.MainScreen.route)
+            }
+        }
         composable(route = Screen.MainScreen.route) {
             MainScreen {
                 navController.navigate(Screen.TaskScreen.withArgs("${it.id}"))
