@@ -5,6 +5,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.composeui.domain.model.Task
 import com.composeui.domain.resource.Resource
 import com.composeui.usecases.model.UseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -16,6 +17,7 @@ import javax.inject.Inject
 class MainViewModel @Inject constructor(
     private val useCase: UseCase
 ) : ViewModel() {
+
 
     var state by mutableStateOf(MainScreenState())
 
@@ -51,5 +53,9 @@ class MainViewModel @Inject constructor(
             }
 
         }
+    }
+
+    fun save(title: String, description: String) = viewModelScope.launch {
+        useCase.saveTask(Task(id = 0, title = title, description = description))
     }
 }

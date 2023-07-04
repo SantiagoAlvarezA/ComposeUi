@@ -1,6 +1,5 @@
 package com.composeui.ui.screens.main
 
-import android.widget.Toast
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.grid.GridCells
@@ -8,15 +7,17 @@ import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.Close
+import androidx.compose.material.icons.filled.Done
 import androidx.compose.material3.*
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
+import androidx.compose.runtime.*
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color.Companion.Gray
 import androidx.compose.ui.input.nestedscroll.nestedScroll
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.window.Dialog
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.composeui.R
 import com.composeui.domain.model.Task
@@ -25,30 +26,36 @@ import com.composeui.domain.model.Task
 @Composable
 fun MainScreen(
     viewModel: MainViewModel = hiltViewModel(),
-    navigateToProduct: (Task) -> Unit,
+    navigateToTask: (Task) -> Unit,
 ) {
     val scrollBehavior = TopAppBarDefaults.pinnedScrollBehavior()
     val state = viewModel.state
-    val context = LocalContext.current
+    //val context = LocalContext.current
+
+    val (showDialog, onDismissRequest) = remember { mutableStateOf(false) }
+
+    var title by rememberSaveable { mutableStateOf("") }
+    var description by rememberSaveable { mutableStateOf("") }
+
+    var saveEnable by remember { mutableStateOf(false) }
+    saveEnable = title.isNotEmpty() && description.isNotEmpty()
+
 
     Scaffold(
         modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
         topBar = {
-            TopAppBar(
-                scrollBehavior = scrollBehavior,
+            TopAppBar(scrollBehavior = scrollBehavior,
                 colors = TopAppBarDefaults.topAppBarColors(),
                 title = {
                     Text(text = stringResource(R.string.app_name))
-                }
-            )
+                })
         },
         floatingActionButton = {
             FloatingActionButton(onClick = {
-                Toast.makeText(context, "hello", Toast.LENGTH_LONG).show()
+                onDismissRequest(!showDialog)
             }) {
                 Icon(
-                    imageVector = Icons.Filled.Add,
-                    contentDescription = "Localized description"
+                    imageVector = Icons.Filled.Add, contentDescription = "Localized description"
                 )
             }
         },
@@ -56,7 +63,9 @@ fun MainScreen(
             Box(modifier = Modifier.padding(contentPadding)) {
 
                 if (state.isLoading) {
-                    CircularProgressIndicator()
+                    CircularProgressIndicator(
+                        modifier = Modifier.fillMaxSize()
+                    )
                 }
 
                 state.error?.let {
@@ -69,13 +78,87 @@ fun MainScreen(
                 ) {
                     items(state.tasks) { product ->
                         TaskCompose(product) {
-                            navigateToProduct(it)
+                            navigateToTask(it)
                         }
                     }
+                    item {
+                        Spacer(modifier = Modifier.height(72.dp))
+                    }
                 }
+
+                DialogFullScreen(
+                    showDialog = showDialog,
+                    onDismissRequest = {
+                        onDismissRequest(it)
+                        title = ""
+                        description = ""
+                    },
+                    topBar = {
+
+                        TopAppBar(
+                            navigationIcon = {
+                                IconButton(onClick = {
+                                    onDismissRequest(false)
+                                }) {
+                                    Icon(
+                                        imageVector = Icons.Filled.Close,
+                                        contentDescription = "Close"
+                                    )
+                                }
+                            },
+                            title = {
+                                Text(text = stringResource(R.string.create_task))
+                            },
+                            actions = {
+                                if (saveEnable)
+                                    IconButton(
+                                        onClick = {
+                                            viewModel.save(title = title, description = description)
+                                            onDismissRequest(false)
+                                        },
+                                    ) {
+                                        Text(text = "Save")
+                                    }
+                            }
+                        )
+                    },
+                    floatingActionButton = {
+                        FloatingActionButton(
+                            onClick = {
+                                if (saveEnable) {
+                                    viewModel.save(title = title, description = description)
+                                    onDismissRequest(false)
+                                }
+                            },
+                            containerColor = if (saveEnable) MaterialTheme.colorScheme.primaryContainer else Gray,
+                        ) {
+                            Icon(
+                                imageVector = Icons.Filled.Done,
+                                contentDescription = "Done"
+                            )
+                        }
+                    },
+                    content = {
+                        Column(modifier = Modifier.fillMaxWidth()) {
+                            val modifier = Modifier.fillMaxWidth()
+                            OutlinedTextField(
+                                modifier = modifier,
+                                value = title,
+                                onValueChange = { title = it },
+                                label = { Text("tittle") },
+                            )
+                            Spacer(modifier = Modifier.height(16.dp))
+                            OutlinedTextField(
+                                modifier = modifier,
+                                value = description,
+                                onValueChange = { description = it },
+                                label = { Text("Description") },
+                            )
+                        }
+                    }
+                )
             }
-        }
-    )
+        })
 
 
 }
@@ -102,39 +185,41 @@ fun TaskCompose(task: Task, onClickItem: (Task) -> Unit) {
     }
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun Dialog(onDismiss: Boolean) {
-
-    val openDialog = remember { mutableStateOf(onDismiss) }
-
-    if (openDialog.value) {
-        AlertDialog(
+fun DialogFullScreen(
+    showDialog: Boolean,
+    onDismissRequest: (Boolean) -> Unit,
+    topBar: @Composable () -> Unit,
+    floatingActionButton: @Composable () -> Unit,
+    content: @Composable () -> Unit
+) {
+    if (showDialog) {
+        Dialog(
             onDismissRequest = {
-                openDialog.value = false
-            },
-            title = {
-                Text(text = "Title")
-            },
-            text = {
-                Text(
-                    "This area typically contains the supportive text " +
-                            "which presents the details regarding the Dialog's purpose."
-                )
-            },
-            confirmButton = {
-                Row(
-                    modifier = Modifier.padding(all = 8.dp),
-                    horizontalArrangement = Arrangement.Center
-                ) {
-                    Button(
-                        modifier = Modifier.fillMaxWidth(),
-                        onClick = { openDialog.value = false }
+                onDismissRequest(false)
+            }) {
+            Scaffold(
+                topBar = {
+                    topBar()
+                },
+                floatingActionButton = {
+                    floatingActionButton()
+                },
+                content = { paddings ->
+
+                    Box(
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .padding(paddings)
+                            .padding(horizontal = 12.dp)
                     ) {
-                        Text("Dismiss")
+                        content()
                     }
-                }
-            }
-        )
+                })
+        }
+    } else {
+        onDismissRequest(false)
     }
 
 }
