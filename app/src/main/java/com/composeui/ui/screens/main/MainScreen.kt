@@ -9,6 +9,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Done
+import androidx.compose.material.icons.filled.LocationOn
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
@@ -27,6 +28,7 @@ import com.composeui.domain.model.Task
 fun MainScreen(
     viewModel: MainViewModel = hiltViewModel(),
     navigateToTask: (Task) -> Unit,
+    navigateToMap: () -> Unit,
 ) {
     val scrollBehavior = TopAppBarDefaults.pinnedScrollBehavior()
     val state = viewModel.state
@@ -51,13 +53,26 @@ fun MainScreen(
                 })
         },
         floatingActionButton = {
-            FloatingActionButton(onClick = {
-                onDismissRequest(!showDialog)
-            }) {
-                Icon(
-                    imageVector = Icons.Filled.Add, contentDescription = "Localized description"
-                )
+            Column {
+                FloatingActionButton(onClick = {
+                    navigateToMap()
+                }) {
+                    Icon(
+                        imageVector = Icons.Default.LocationOn,
+                        contentDescription = "Localized description"
+                    )
+                }
+                Spacer(modifier = Modifier.height(16.dp))
+                FloatingActionButton(onClick = {
+                    onDismissRequest(!showDialog)
+                }) {
+                    Icon(
+                        imageVector = Icons.Filled.Add, contentDescription = "Localized description"
+                    )
+                }
             }
+
+
         },
         content = { contentPadding ->
             Box(modifier = Modifier.padding(contentPadding)) {

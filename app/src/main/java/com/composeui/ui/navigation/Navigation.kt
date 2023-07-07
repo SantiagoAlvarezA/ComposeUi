@@ -7,6 +7,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import com.composeui.ui.screens.main.MainScreen
+import com.composeui.ui.screens.map.MapScreen
 import com.composeui.ui.screens.splash.SplashScreen
 import com.composeui.ui.screens.task.ProductScreen
 
@@ -21,9 +22,14 @@ fun Navigation() {
             }
         }
         composable(route = Screen.MainScreen.route) {
-            MainScreen {
-                navController.navigate(Screen.TaskScreen.withArgs("${it.id}"))
-            }
+            MainScreen(
+                navigateToTask = {
+                    navController.navigate(Screen.TaskScreen.withArgs("${it.id}"))
+                },
+                navigateToMap = {
+                    navController.navigate(Screen.MapScreen.route)
+                }
+            )
         }
         composable(
             route = "${Screen.TaskScreen.route}/{id}",
@@ -34,6 +40,10 @@ fun Navigation() {
             ProductScreen(id) {
                 navController.popBackStack()
             }
+        }
+
+        composable(route = Screen.MapScreen.route){
+            MapScreen()
         }
 
 

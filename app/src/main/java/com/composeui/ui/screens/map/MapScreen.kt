@@ -6,6 +6,8 @@ import androidx.hilt.navigation.compose.hiltViewModel
 
 @Composable
 fun MapScreen( viewModel: MapViewModel = hiltViewModel()){
+    val state = viewModel.state
+
 
 
 }
